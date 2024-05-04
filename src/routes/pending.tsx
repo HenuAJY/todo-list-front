@@ -1,26 +1,20 @@
 import React, { memo, useState } from "react";
 import { CheckboxChangeEvent } from "antd/es/checkbox";
 import { Button, Checkbox, Input, List } from "antd";
-import {
-  addTask,
-  completeTaskById,
-  deleteTaskById,
-  getAllTask,
-  getCurrentWeekTask,
-  getLastWeekCompletedTask,
-} from "../request";
+import { taskAction } from "../taskAction";
 import { Link, Route, useLoaderData, useSubmit } from "react-router-dom";
 import { QueryType } from "../config";
+
 
 export const action: Action<typeof Route> = async ({ request }) => {
   const data = await request.json();
   const { type, payload } = data;
   if (type === "addTask") {
-    await addTask(payload);
+    await taskAction.addTask(payload);
   } else if (type === "delTask") {
-    await deleteTaskById(payload);
+    await taskAction.deleteTaskById(payload);
   } else if (type === "doneTask") {
-    await completeTaskById(payload.id, payload.done);
+    await taskAction.completeTaskById(payload.id, payload.done);
   }
   return {};
 };
@@ -36,13 +30,13 @@ export const loader: Loader<typeof Route> = async ({
   let taskList: Task[] = [];
   if (type === QueryType.all) {
     //查询所有任务
-    taskList = await getAllTask();
+    taskList = await taskAction.getAllTask();
   } else if (type === QueryType.currentWeek) {
     //查询本周任务
-    taskList = await getCurrentWeekTask();
+    taskList = await taskAction.getCurrentWeekTask();
   } else if (type === QueryType.lastWeek) {
     //查询上周任务
-    taskList = await getLastWeekCompletedTask();
+    taskList = await taskAction.getLastWeekCompletedTask();
   }
   return { taskList };
 };
@@ -81,9 +75,7 @@ const TaskItem = memo(function TaskItem({ task }: { task: Task }) {
           avatar={
             <Checkbox checked={task.completed} onChange={handleTaskDone} />
           }
-          description={
-            `创建时间：${new Date(task.createDate).toLocaleDateString()};完成时间：${task.completed ? new Date(task.completedDate).toLocaleDateString() : "未完成"}`
-          }
+          description={`创建时间：${new Date(task.createDate).toLocaleDateString()};完成时间：${task.completed ? new Date(task.completedDate).toLocaleDateString() : "未完成"}`}
           style={{ alignItems: "center" }}
           title={
             <Link to={`/taskdetail/${task.id}`}>

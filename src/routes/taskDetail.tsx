@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, useLoaderData } from "react-router-dom";
-import { getDetailTaskById, saveTaskDetail, updateTaskTitle } from "../request";
+import { taskAction } from "../taskAction";
 
 export const loader: React.ComponentProps<typeof Route>["loader"] = async ({
   params,
 }) => {
   const { taskid } = params;
-  const task = await getDetailTaskById(taskid as string);
+  const task = await taskAction.getDetailTaskById(taskid as string);
   if (!task) {
     throw new Error(`任务id:${taskid}对应的任务不存在`);
   }
@@ -44,8 +44,8 @@ function useDelaySave(
 
   const manualSave = async () => {
     setSaving(true);
-    await updateTaskTitle(detailTask.id, detailTask.title);
-    await saveTaskDetail(detailTask.id, detailTask.detail);
+    await taskAction.updateTaskTitle(detailTask.id, detailTask.title);
+    await taskAction.saveTaskDetail(detailTask.id, detailTask.detail);
     setSaving(false);
   };
 

@@ -39,52 +39,95 @@ async function addMockTask() {
 
 window.addMockTask = addMockTask;
 
-export async function getPendingTaskList(): Promise<Task[]> {
-  const taskList = await getTaskList();
-  return taskList.filter(({ completed }) => !completed);
-}
-
-export async function addTask(taskTitle: string) {
-  const taskList = await getTaskList();
-  const id: string = Math.random().toString(36).substring(2);
-  const task: Task = {
-    completed: false,
-    completedDate: 0,
-    createDate: Date.now(),
-    description: "",
-    id,
-    title: taskTitle,
-  };
-  taskList.push(task);
-  saveTaskList(taskList);
-}
-
-export async function completeTaskById(
-  id: string,
-  done: boolean,
-): Promise<void> {
-  const taskList = await getTaskList();
-  const task = taskList.find((task) => task.id === id);
-  if (task) {
-    task.completedDate = Date.now();
-    task.completed = done;
+export const taskAction: TaskAction = {
+  async addTask(taskTitle: string) {
+    const taskList = await getTaskList();
+    const id: string = Math.random().toString(36).substring(2);
+    const task: Task = {
+      completed: false,
+      completedDate: 0,
+      createDate: Date.now(),
+      description: "",
+      id,
+      title: taskTitle,
+    };
+    taskList.push(task);
     saveTaskList(taskList);
+  },
+  async completeTaskById(id: string, done: boolean): Promise<void> {
+    const taskList = await getTaskList();
+    const task = taskList.find((task) => task.id === id);
+    if (task) {
+      task.completedDate = Date.now();
+      task.completed = done;
+      saveTaskList(taskList);
+    }
+  },
+  async getPendingTaskList(): Promise<Task[]> {
+    const taskList = await getTaskList();
+    return taskList.filter(({ completed }) => !completed);
+  },
+  async getCompletedTask(): Promise<Task[]> {
+    const taskList = await getTaskList();
+    return taskList.filter(({ completed }) => completed);
+  },
+  async deleteTaskById(id: string): Promise<void> {
+    const taskList = await getTaskList();
+    const deleteIndex = taskList.findIndex((task) => task.id === id);
+    if (deleteIndex > -1) {
+      taskList.splice(deleteIndex, 1);
+      saveTaskList(taskList);
+    }
+  },
+  async getCurrentWeekTask(): Promise<Task[]> {
+    const taskList = await getTaskList();
+    const result: Task[] = [];
+    for (const task of taskList) {
+      if (!task.completed || completedInCurrentWeek(task)) {
+        result.push(task);
+      }
+    }
+    return result;
+  },
+  async getDetailTaskById(id: string): Promise<DetailTask | undefined> {
+    const taskList = await getTaskList();
+    const task = taskList.find((task) => task.id === id);
+    if (task) {
+      const taskDetail = await getTaskDetail(id);
+      return {
+        ...task,
+        detail: taskDetail,
+      };
+    }
+  },
+  async saveTaskDetail(id: string, detail: string): Promise<void> {
+    const details = await getAllDetails();
+    details[id] = detail;
+    await saveDetails(details);
+  },
+  async updateTaskTitle(id: string, title: string): Promise<void> {
+    const taskList = await getTaskList();
+    const task = taskList.find((task) => task.id === id);
+    if (task) {
+      task.title = title;
+      saveTaskList(taskList);
+    }
+  },
+  async getAllTask(): Promise<Task[]> {
+    const taskList = await getTaskList();
+    return taskList;
+  },
+  async getLastWeekCompletedTask(): Promise<Task[]> {
+    const taskList = await getTaskList();
+    const result = [];
+    for (const task of taskList) {
+      if (task.completed && inLastWeek(task)) {
+        result.push(task);
+      }
+    }
+    return result;
   }
-}
-
-export async function getCompletedTask(): Promise<Task[]> {
-  const taskList = await getTaskList();
-  return taskList.filter(({ completed }) => completed);
-}
-
-export async function deleteTaskById(id: string): Promise<void> {
-  const taskList = await getTaskList();
-  const deleteIndex = taskList.findIndex((task) => task.id === id);
-  if (deleteIndex > -1) {
-    taskList.splice(deleteIndex, 1);
-    saveTaskList(taskList);
-  }
-}
+};
 
 async function fakeNetWork() {
   return await new Promise((resolve) =>
@@ -129,17 +172,6 @@ async function saveTaskList(tasks: Task[]) {
   localStorage.setItem("taskList", JSON.stringify(tasks));
 }
 
-export async function getCurrentWeekTask(): Promise<Task[]> {
-  const taskList = await getTaskList();
-  const result: Task[] = [];
-  for (const task of taskList) {
-    if (!task.completed || completedInCurrentWeek(task)) {
-      result.push(task);
-    }
-  }
-  return result;
-}
-
 async function getAllDetails(): Promise<Record<string, string>> {
   await fakeNetWork();
   return JSON.parse(localStorage.getItem("taskDetail") || "{}");
@@ -154,46 +186,6 @@ async function getTaskDetail(id: string): Promise<string> {
   return details[id] || "";
 }
 
-export async function getDetailTaskById(
-  id: string,
-): Promise<DetailTask | undefined> {
-  const taskList = await getTaskList();
-  const task = taskList.find((task) => task.id === id);
-  if (task) {
-    const taskDetail = await getTaskDetail(id);
-    return {
-      ...task,
-      detail: taskDetail,
-    };
-  }
-}
-
-export async function saveTaskDetail(
-  id: string,
-  detail: string,
-): Promise<void> {
-  const details = await getAllDetails();
-  details[id] = detail;
-  await saveDetails(details);
-}
-
-export async function updateTaskTitle(
-  id: string,
-  title: string,
-): Promise<void> {
-  const taskList = await getTaskList();
-  const task = taskList.find((task) => task.id === id);
-  if (task) {
-    task.title = title;
-    saveTaskList(taskList);
-  }
-}
-
-export async function getAllTask() {
-  const taskList = await getTaskList();
-  return taskList;
-}
-
 function inLastWeek(task: Task): boolean {
   const date = new Date(task.createDate);
   date.setDate(date.getDate() + 7);
@@ -201,13 +193,3 @@ function inLastWeek(task: Task): boolean {
   return date >= start && date < end;
 }
 
-export async function getLastWeekCompletedTask(): Promise<Task[]> {
-  const taskList = await getTaskList();
-  const result = [];
-  for (const task of taskList) {
-    if (task.completed && inLastWeek(task)) {
-      result.push(task);
-    }
-  }
-  return result;
-}

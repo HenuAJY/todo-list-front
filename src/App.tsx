@@ -11,6 +11,10 @@ import PendingTask, {
 } from "./routes/pending";
 import TaskDetail, { loader as detailLoader } from "./routes/taskDetail";
 import { QueryType } from "./config";
+import { taskAction } from "./taskActionInBrowser";
+import {initTaskAction} from "./taskAction";
+
+initTaskAction(taskAction);
 
 const router = createBrowserRouter([
   {
