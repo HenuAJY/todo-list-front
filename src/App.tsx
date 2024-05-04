@@ -1,9 +1,5 @@
 import React from "react";
-import {
-  createBrowserRouter,
-  RouterProvider,
-  redirect,
-} from "react-router-dom";
+import { RouterProvider, redirect, createHashRouter } from "react-router-dom";
 import Root from "./routes/root";
 import PendingTask, {
   action as pendingAction,
@@ -12,11 +8,11 @@ import PendingTask, {
 import TaskDetail, { loader as detailLoader } from "./routes/taskDetail";
 import { QueryType } from "./config";
 import { taskAction } from "./taskActionInBrowser";
-import {initTaskAction} from "./taskAction";
+import { initTaskAction } from "./taskAction";
 
 initTaskAction(taskAction);
 
-const router = createBrowserRouter([
+const router = createHashRouter([
   {
     path: "/",
     element: <Root />,
