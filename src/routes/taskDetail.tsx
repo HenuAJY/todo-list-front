@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Route, useLoaderData } from "react-router-dom";
 import { taskAction } from "../taskAction";
+import {LeftOutlined} from "@ant-design/icons";
+import {useNavigate} from "react-router";
 
 export const loader: React.ComponentProps<typeof Route>["loader"] = async ({
   params,
@@ -59,6 +61,7 @@ function TaskDetail() {
   const detailRef = useRef<HTMLDivElement>(null);
   const [saving, manualSave] = useDelaySave(detailTask, 10000);
   const saveRef = useRef(manualSave);
+  const navigate = useNavigate();
   saveRef.current = manualSave;
 
   useEffect(() => {
@@ -98,9 +101,14 @@ function TaskDetail() {
 
   return (
     <div className="taskDetail" onKeyDown={handleSave}>
-      <span className={`savingSpanner ${saving ? "saving" : ""}`}>
-        正在保存...
-      </span>
+      <nav className={"taskDetailNav"}>
+        <LeftOutlined onClick={() => {
+          navigate(-1);
+        }} />
+        <span className={`savingSpanner ${saving ? "saving" : ""}`}>
+          正在保存...
+        </span>
+      </nav>
       <div className="detail">
         <div className="detailInner">
           <h2

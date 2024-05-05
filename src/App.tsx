@@ -44,16 +44,6 @@ function App() {
   return (
     <>
       <RouterProvider router={router}></RouterProvider>
-      <button
-        style={{
-          position: "absolute",
-          left: 0,
-          bottom: 0,
-        }}
-        onClick={addMockTask}
-      >
-        添加模拟数据
-      </button>
     </>
   );
 }

@@ -135,14 +135,20 @@ body {
 
 .taskDetail .savingSpanner {
   font-size: 13px;
-  margin-top: 20px;
   opacity: 0.7;
   visibility: hidden;
+  text-align: right;
+  padding-top: 20px;
+  padding-right: 20px;
 }
 
 .taskDetail .savingSpanner.saving {
   visibility: visible;
-  margin-left: 20px;
+}
+
+.taskDetail .taskDetailNav {
+  width: 500px;
+  margin: auto;
 }
 
 .taskDetail .taskTitle {
