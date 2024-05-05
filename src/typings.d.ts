@@ -7,9 +7,12 @@ declare interface Task {
   completedDate: number;
 }
 
-declare interface DetailTask extends Task {
+declare interface Detail {
+  taskId: string;
   detail: string;
 }
+
+declare type DetailTask = Task & Detail;
 
 declare type Action<T> = React.ComponentProps<T>["action"];
 declare type Loader<T> = React.ComponentProps<T>["loader"];

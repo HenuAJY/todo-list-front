@@ -2,7 +2,7 @@ const { merge } = require("webpack-merge");
 const common = require("./webpack.common");
 
 const config = merge(common, {
-  devtool: "inline-source-map",
+  devtool: "source-map",
 	// devServer: {
 	// 	open: true,
 	// 	host: 'localhost',

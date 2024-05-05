@@ -37,6 +37,8 @@ export const loader: Loader<typeof Route> = async ({
   } else if (type === QueryType.lastWeek) {
     //查询上周任务
     taskList = await taskAction.getLastWeekCompletedTask();
+  } else if (type === QueryType.completed) {
+    taskList = await taskAction.getCompletedTask();
   }
   return { taskList };
 };
@@ -79,7 +81,7 @@ const TaskItem = memo(function TaskItem({ task }: { task: Task }) {
           style={{ alignItems: "center" }}
           title={
             <Link to={`/taskdetail/${task.id}`}>
-              <pre>{task.title || "该任务暂无标题"}</pre>
+              <pre className={"taskTitle"}>{task.title || "该任务暂无标题"}</pre>
             </Link>
           }
         />

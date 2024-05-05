@@ -37,7 +37,7 @@ async function addMockTask() {
   saveTaskList(taskList);
 }
 
-window.addMockTask = addMockTask;
+// window.addMockTask = addMockTask;
 
 export const taskAction: TaskAction = {
   async addTask(taskTitle: string) {
@@ -97,6 +97,7 @@ export const taskAction: TaskAction = {
       return {
         ...task,
         detail: taskDetail,
+        taskId: task.id
       };
     }
   },

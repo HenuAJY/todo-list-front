@@ -15,6 +15,10 @@ const nav = [
     title: "上周已完成",
     to: `pending/${QueryType.lastWeek}`,
   },
+  {
+    title: "全部已完成",
+    to: `pending/${QueryType.completed}`,
+  },
 ];
 
 function Root() {

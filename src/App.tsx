@@ -1,3 +1,4 @@
+import { taskAction } from "./dataApi/indexedDB";
 import React from "react";
 import { RouterProvider, redirect, createHashRouter } from "react-router-dom";
 import Root from "./routes/root";
@@ -7,8 +8,8 @@ import PendingTask, {
 } from "./routes/pending";
 import TaskDetail, { loader as detailLoader } from "./routes/taskDetail";
 import { QueryType } from "./config";
-import { taskAction } from "./taskActionInBrowser";
 import { initTaskAction } from "./taskAction";
+import { addMockTask } from "./dataApi/mock";
 
 initTaskAction(taskAction);
 
@@ -40,7 +41,21 @@ const router = createHashRouter([
 ]);
 
 function App() {
-  return <RouterProvider router={router}></RouterProvider>;
+  return (
+    <>
+      <RouterProvider router={router}></RouterProvider>
+      <button
+        style={{
+          position: "absolute",
+          left: 0,
+          bottom: 0,
+        }}
+        onClick={addMockTask}
+      >
+        添加模拟数据
+      </button>
+    </>
+  );
 }
 
 export default App;
